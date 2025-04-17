@@ -12,7 +12,7 @@ def home():
 def about():
     return """
         <h2>About Me</h2>
-        <p>Wah gwaan people, I'm Clyde. I'm 18 seconds old.</p>
+        <p>Wah gwaan people, I'm Clyde.</p>
     """
 
 if __name__ == '__main__':
