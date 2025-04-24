@@ -5,7 +5,11 @@ app = Flask(__name__)
 # Default route
 @app.route('/')
 def home():
-    return "<h1>Flash</h1>"
+    return """
+        <h1>Flash</h1>
+        <a href='/about'>About Me</a><br>
+        <a href='/fortune'>Get Your Fortune</a>
+    """
 
 # About route
 @app.route('/about')
@@ -13,6 +17,7 @@ def about():
     return """
         <h2>About Me</h2>
         <p>Wah gwaan people, I'm Clyde.</p>
+        <a href="/">Main Page</a>
     """
 
 # Fortune route
@@ -44,7 +49,6 @@ def fortune():
         """
 
     else:
-    # GET method: display form
         return """
             <h2>Get Your Fortune</h2>
             <form method="POST" action="/fortune">
@@ -66,6 +70,7 @@ def fortune():
                 </select><br><br>
     
                 <button type="submit">Submit</button>
+                <a href="/">Main Page</a>
             </form>
         """
     
