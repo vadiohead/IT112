@@ -1,17 +1,25 @@
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Default route
+# SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///songs.db'
+
+db = SQLAlchemy(app)
+
 @app.route('/')
 def home():
     return """
         <h1>Flash</h1>
-        <a href='/about'>About Me</a><br>
+        <a href='/about'>About Me</a>
+        <br>
         <a href='/fortune'>Get Your Fortune</a>
+        <br>
+        <a href='/songs'>Songs</a>
+        <br>
     """
 
-# About route
 @app.route('/about')
 def about():
     return """
@@ -20,7 +28,6 @@ def about():
         <a href="/">Main Page</a>
     """
 
-# Fortune route
 @app.route('/fortune', methods=['POST', 'GET'])
 def fortune():
     color = ['chartreuse', 'turquoise', 'elephant\'s breath', 'red']
@@ -54,7 +61,7 @@ def fortune():
             <form method="POST" action="/fortune">
                 <label>Your name: </label><br>
                 <input type="text" name="user"><br><br>
-    
+
                 <label>Choose a color:</label><br>
                 <select name="color">
                     <option>chartreuse</option>
@@ -62,17 +69,73 @@ def fortune():
                     <option>elephant's breath</option>
                     <option>red</option>
                 </select><br><br>
-    
+
                 <label>Choose a number:</label><br>
                 <select name="number">
                     <option>1</option>
                     <option>2</option>
                 </select><br><br>
-    
+
                 <button type="submit">Submit</button>
+                <br>
                 <a href="/">Main Page</a>
             </form>
         """
-    
+
+class SongList(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String())
+    album = db.Column(db.String())
+    year = db.Column(db.Integer)
+    video = db.Column(db.String())
+
+    def __init__(self, title, album, year, video):
+        self.title = title
+        self.album = album
+        self.year = year
+        self.video = video
+
+def populate_db():
+    db.create_all()
+    songs = [
+            SongList(title='Ice Cube - My Summer Vacation', album='Death Certificate', year=1991,
+                     video='https://youtube.com/watch?v=SXrWIyCW-7E'),
+            SongList(title='Car Seat Headrest - Gethsemane', album='The Scholars', year=2025,
+                     video='https://youtu.be/RAGA2fmBSJo?si=FtCJZZyGhYmnvUcn'),
+            SongList(title='The Beloved - Sweet Harmony', album='Conscience', year=1993,
+                     video='https://youtu.be/rP9Z5Pc8cRM?si=1nSsg7XkPkwBNPIo'),
+            SongList(title='Yeule - sulky baby', album='softscars', year=2023,
+                     video='https://youtu.be/ca7zUSNpL70?si=Yo9sk9hmVYip0pCD'),
+            SongList(title='Noize MC - Ругань из-за стены', album='Последний альбом', year=2011,
+                     video='https://youtu.be/vr1qkx3hfx8?si=kGrhs0Dy_mMRPykZ'),
+            SongList(title='Alihan Dze - Бухы дээрэ (ft. Saryuna)', album='Шата', year=2016,
+                     video='https://youtu.be/vP3oc-pHRtE?si=AmdcESSAb4hU2ojZ')
+        ]
+    db.session.bulk_save_objects(songs)
+    db.session.commit()
+
+@app.route('/songs')
+def show_songs():
+    songs = SongList.query.all()
+    song_list = "".join([f"<li><a href='/songs/{song.id}'>{song.title}</a></li>" for song in songs])
+    return f"""
+        <h2>Song list</h2>
+        <ul>{song_list}</ul>
+        <a href="/">Main Page</a>
+    """
+
+@app.route('/songs/<int:song_id>')
+def song_detail(song_id):
+    song = SongList.query.get_or_404(song_id)
+    return f"""
+        <h2>{song.title}</h2>
+        <p><strong>Album:</strong> {song.album}</p>
+        <p><strong>Year of release:</strong> {song.year}</p>
+        <p><strong>Music video: </strong>
+            <a href="{song.video}" target="_blank">{song.video}</a>
+        </p>
+        <a href="/songs">Back to Songs List</a>
+    """
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
