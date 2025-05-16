@@ -188,6 +188,11 @@ def clear_songs():
     db.session.commit()
     return "<p>Database has been cleared.</p><a href='/'>Go to Main Menu</a>"
 
+@app.route('/init-db')
+def init_db():
+    db.create_all()
+    return "<p>Database initialized!</p><a href='/'>Go Home</a>"
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
