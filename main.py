@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -122,9 +122,27 @@ def show_songs():
     return f"""
         <h2>Song list</h2>
         <ul>{song_list}</ul>
+        <a href="/songs/json">Get songs in JSON file</a><br><br>
         <a href="/songs/add">Add a New Song</a><br><br>
         <a href="/">Main Page</a>
     """
+
+@app.route('/songs/json', methods=['GET', 'POST'])
+def api_handler():
+    if request.method == 'GET':
+        # Fetch data
+        songs = SongList.query.all()
+        song_data = [
+            {
+                'id': song.id,
+                'title': song.title,
+                'album': song.album,
+                'year': song.year,
+                'video': song.video
+            }
+            for song in songs
+        ]
+        return jsonify(song_data), 200
 
 @app.route('/songs/add', methods=['GET', 'POST'])
 def add_song():
@@ -166,6 +184,7 @@ def add_song():
         <a href="/songs">Back to Songs List</a>
     """
 
+
 @app.route('/songs/<int:song_id>')
 def song_detail(song_id):
     song = SongList.query.get_or_404(song_id)
@@ -186,6 +205,6 @@ def clear_songs():
     return "<p>Database has been cleared.</p><a href='/'>Go to Main Menu</a>"
 
 if __name__ == '__main__':
-    #with app.app_context():
-    #    populate_db()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True, host='0.0.0.0')
