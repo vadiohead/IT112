@@ -1,9 +1,22 @@
 from flask import Flask, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
+import os
+import shutil
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///songs.db'
+RUNTIME_DB_PATH = '/tmp/songs.db'
+REPO_DB_PATH = 'songs.db'  # this should be in your GitHub repo root
+
+if not os.path.exists(RUNTIME_DB_PATH):
+    if os.path.exists(REPO_DB_PATH):
+        shutil.copy(REPO_DB_PATH, RUNTIME_DB_PATH)
+        print("✅ Copied pre-populated DB to /tmp/")
+    else:
+        print("⚠️ No existing DB found; will initialize a new one.")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{RUNTIME_DB_PATH}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -11,12 +24,9 @@ db = SQLAlchemy(app)
 def home():
     return """
         <h1>Flash</h1>
-        <a href='/about'>About Me</a>
-        <br>
-        <a href='/fortune'>Get Your Fortune</a>
-        <br>
-        <a href='/songs'>Songs</a>
-        <br>
+        <a href='/about'>About Me</a><br>
+        <a href='/fortune'>Get Your Fortune</a><br>
+        <a href='/songs'>Songs</a><br>
     """
 
 @app.route('/about')
@@ -41,7 +51,7 @@ def fortune():
             ('chartreuse', '1'): "you are lucky",
             ('chartreuse', '2'): "peace upon you",
             ('turquoise', '1'): "fill you with wit",
-            ('turquoise', '2'): "do not pick elephant\'s breath",
+            ('turquoise', '2'): "do not pick elephant's breath",
             ('elephant\'s breath', '1'): "phoque yew",
             ('elephant\'s breath', '2'): "straight outta compton",
             ('red', '1'): "you will find something surprising",
@@ -53,7 +63,6 @@ def fortune():
             <p>{name}, your fortune is:<strong> {fortune_msg}</strong></p>
             <a href="/fortune">Try Again</a>
         """
-
     else:
         return """
             <h2>Get Your Fortune</h2>
@@ -75,16 +84,14 @@ def fortune():
                     <option>2</option>
                 </select><br><br>
 
-                <button type="submit">Submit</button>
-                <br>
+                <button type="submit">Submit</button><br>
                 <a href="/">Main Page</a>
             </form>
         """
 
-# databases
-
+# Database model
 class SongList(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String())
     album = db.Column(db.String())
     year = db.Column(db.Integer)
@@ -95,25 +102,6 @@ class SongList(db.Model):
         self.album = album
         self.year = year
         self.video = video
-
-#def populate_db():
-    #db.create_all()
-    #songs = [
-    #        SongList(title='Ice Cube - My Summer Vacation', album='Death Certificate', year=1991,
-    #                 video='https://youtube.com/watch?v=SXrWIyCW-7E'),
-    #        SongList(title='Car Seat Headrest - Gethsemane', album='The Scholars', year=2025,
-    #                 video='https://youtu.be/RAGA2fmBSJo?si=FtCJZZyGhYmnvUcn'),
-    #        SongList(title='The Beloved - Sweet Harmony', album='Conscience', year=1993,
-    #                 video='https://youtu.be/rP9Z5Pc8cRM?si=1nSsg7XkPkwBNPIo'),
-    #       SongList(title='Yeule - sulky baby', album='softscars', year=2023,
-    #                 video='https://youtu.be/ca7zUSNpL70?si=Yo9sk9hmVYip0pCD'),
-    #        SongList(title='Noize MC - Ругань из-за стены', album='Последний альбом', year=2010,
-    #                 video='https://youtu.be/vr1qkx3hfx8?si=kGrhs0Dy_mMRPykZ'),
-    #        SongList(title='Alihan Dze - Бухы дээрэ (ft. Saryuna)', album='Шата', year=2016,
-    #                 video='https://youtu.be/vP3oc-pHRtE?si=AmdcESSAb4hU2ojZ')
-    #]
-    #db.session.bulk_save_objects(songs)
-    #db.session.commit()
 
 @app.route('/songs')
 def show_songs():
@@ -127,22 +115,20 @@ def show_songs():
         <a href="/">Main Page</a>
     """
 
-@app.route('/songs/json', methods=['GET', 'POST'])
+@app.route('/songs/json', methods=['GET'])
 def api_handler():
-    if request.method == 'GET':
-        # Fetch data
-        songs = SongList.query.all()
-        song_data = [
-            {
-                'id': song.id,
-                'title': song.title,
-                'album': song.album,
-                'year': song.year,
-                'video': song.video
-            }
-            for song in songs
-        ]
-        return jsonify(song_data), 200
+    songs = SongList.query.all()
+    song_data = [
+        {
+            'id': song.id,
+            'title': song.title,
+            'album': song.album,
+            'year': song.year,
+            'video': song.video
+        }
+        for song in songs
+    ]
+    return jsonify(song_data), 200
 
 @app.route('/songs/add', methods=['GET', 'POST'])
 def add_song():
@@ -157,7 +143,6 @@ def add_song():
                 <p>All fields are required!</p>
                 <a href="/songs/add">Go Back</a>
             """
-
         try:
             year = int(year)
         except ValueError:
@@ -184,7 +169,6 @@ def add_song():
         <a href="/songs">Back to Songs List</a>
     """
 
-
 @app.route('/songs/<int:song_id>')
 def song_detail(song_id):
     song = SongList.query.get_or_404(song_id)
@@ -207,4 +191,4 @@ def clear_songs():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
