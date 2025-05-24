@@ -96,25 +96,6 @@ class SongList(db.Model):
         self.year = year
         self.video = video
 
-#def populate_db():
-    #db.create_all()
-    #songs = [
-    #        SongList(title='Ice Cube - My Summer Vacation', album='Death Certificate', year=1991,
-    #                 video='https://youtube.com/watch?v=SXrWIyCW-7E'),
-    #        SongList(title='Car Seat Headrest - Gethsemane', album='The Scholars', year=2025,
-    #                 video='https://youtu.be/RAGA2fmBSJo?si=FtCJZZyGhYmnvUcn'),
-    #        SongList(title='The Beloved - Sweet Harmony', album='Conscience', year=1993,
-    #                 video='https://youtu.be/rP9Z5Pc8cRM?si=1nSsg7XkPkwBNPIo'),
-    #       SongList(title='Yeule - sulky baby', album='softscars', year=2023,
-    #                 video='https://youtu.be/ca7zUSNpL70?si=Yo9sk9hmVYip0pCD'),
-    #        SongList(title='Noize MC - Ругань из-за стены', album='Последний альбом', year=2010,
-    #                 video='https://youtu.be/vr1qkx3hfx8?si=kGrhs0Dy_mMRPykZ'),
-    #        SongList(title='Alihan Dze - Бухы дээрэ (ft. Saryuna)', album='Шата', year=2016,
-    #                 video='https://youtu.be/vP3oc-pHRtE?si=AmdcESSAb4hU2ojZ')
-    #]
-    #db.session.bulk_save_objects(songs)
-    #db.session.commit()
-
 @app.route('/songs')
 def show_songs():
     songs = SongList.query.all()
