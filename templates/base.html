@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'static/style.css' %}">
+</head>
+<body>
+    <h1>
+        {% if user_name %}
+            Welcome, {{ user_name }}!
+        {% else %}
+            Welcome!
+        {% endif %}
+    </h1>
+    <img src="{% static 'static/sadsvitnebo.jpg' %}" alt="Home Image" width="500">
+</body>
+</html>
