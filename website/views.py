@@ -3,12 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from .models import SongList
 
 def home(request):
-    return HttpResponse("""
-        <h1>Django</h1>
-        <a href='/about'>About Me</a><br>
-        <a href='/fortune'>Get Your Fortune</a><br>
-        <a href='/songs'>Songs</a><br>
-    """)
+    user_name = request.GET.get('user_name', '')
+    return render(request, 'base.html', {'user_name': user_name})
 
 def about(request):
     return HttpResponse("""
