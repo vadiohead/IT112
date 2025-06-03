@@ -43,7 +43,7 @@ def show_songs(request):
     songs = SongList.objects.all()
     return render(request, 'song_list.html', {'songs': songs})
 
-def song_detail(request, song_id):
+def song_details(request, song_id):
     song = get_object_or_404(SongList, id=song_id)
     return render(request, 'song_details.html', {'song': song})
 
