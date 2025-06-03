@@ -1,0 +1,7 @@
+<h2>{{ song.title }}</h2>
+<p><strong>Album:</strong> {{ song.album }}</p>
+<p><strong>Year of release:</strong> {{ song.year }}</p>
+<p><strong>Music video:</strong>
+    <a href="{{ song.video }}" target="_blank">{{ song.video }}</a>
+</p>
+<a href="{% url 'show_songs' %}">Back to Songs List</a>

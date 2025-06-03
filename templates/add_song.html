@@ -1,0 +1,17 @@
+<h2>Add a New Song</h2>
+
+{% if error %}
+    <p style="color:red">{{ error }}</p>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    Title: <input type="text" name="title"><br><br>
+    Album: <input type="text" name="album"><br><br>
+    Year: <input type="text" name="year"><br><br>
+    Music Video URL: <input type="text" name="video"><br><br>
+    <input type="submit" value="Add Song">
+</form>
+
+<br>
+<a href="{% url 'show_songs' %}">Back to Songs List</a>

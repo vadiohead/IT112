@@ -68,28 +68,11 @@ def fortune(request):
 
 def show_songs(request):
     songs = SongList.objects.all()
-    song_list = "".join([f"<li><a href='/songs/{song.id}'>{song.title}</a></li>" for song in songs])
-    return HttpResponse(f"""
-        <h2>Song list</h2>
-        <ul>{song_list}</ul>
-        <a href="/songs/json">Get songs in JSON file</a><br><br>
-        <a href="/songs/add">Add a New Song</a><br><br>
-        <a href="/">Main Page</a>
-    """)
+    return render(request, 'song_list.html', {'songs': songs})
 
-def api_handler(request):
-    if request.method == 'GET':
-        songs = SongList.objects.all()
-        song_data = [
-            {
-                'id': song.id,
-                'title': song.title,
-                'album': song.album,
-                'year': song.year,
-                'video': song.video
-            } for song in songs
-        ]
-        return JsonResponse(song_data, safe=False)
+def song_detail(request, song_id):
+    song = get_object_or_404(SongList, id=song_id)
+    return render(request, 'song_details.html', {'song': song})
 
 def add_song(request):
     if request.method == 'POST':
@@ -99,47 +82,30 @@ def add_song(request):
         video = request.POST.get('video')
 
         if not title or not album or not year or not video:
-            return HttpResponse("""
-                <p>All fields are required!</p>
-                <a href="/songs/add">Go Back</a>
-            """)
+            return render(request, 'add_song.html', {
+                'error': 'All fields are required.'
+            })
 
         try:
             year = int(year)
         except ValueError:
-            return HttpResponse("""
-                <p>Year must be a valid number!</p>
-                <a href="/songs/add">Go Back</a>
-            """)
+            return render(request, 'add_song.html', {
+                'error': 'Year must be a valid number.'
+            })
 
         SongList.objects.create(title=title, album=album, year=year, video=video)
         return redirect('/songs')
 
-    return HttpResponse("""
-        <h2>Add a New Song</h2>
-        <form method="POST">
-            Title: <input type="text" name="title"><br><br>
-            Album: <input type="text" name="album"><br><br>
-            Year: <input type="text" name="year"><br><br>
-            Music Video URL: <input type="text" name="video"><br><br>
-            <input type="submit" value="Add Song">
-        </form>
-        <br>
-        <a href="/songs">Back to Songs List</a>
-    """)
+    return render(request, 'add_song.html')
 
-def song_detail(request, song_id):
-    song = get_object_or_404(SongList, id=song_id)
-    return HttpResponse(f"""
-        <h2>{song.title}</h2>
-        <p><strong>Album:</strong> {song.album}</p>
-        <p><strong>Year of release:</strong> {song.year}</p>
-        <p><strong>Music video: </strong>
-            <a href="{song.video}" target="_blank">{song.video}</a>
-        </p>
-        <a href="/songs">Back to Songs List</a>
-    """)
+def api_handler(request):
+    songs = SongList.objects.all()
+    data = [{
+        'id': s.id, 'title': s.title, 'album': s.album,
+        'year': s.year, 'video': s.video
+    } for s in songs]
+    return JsonResponse(data, safe=False)
 
 def clear_songs(request):
     SongList.objects.all().delete()
-    return HttpResponse("<p>Database has been cleared.</p><a href='/'>Go to Main Menu</a>")
+    return render(request, 'clearance.html')

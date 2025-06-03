@@ -23,10 +23,16 @@ urlpatterns = [
     path('', views.home),
     path('about/', views.about),
     path('fortune/', views.fortune),
-    path('songs/', views.show_songs),
-    path('songs/json', views.api_handler),
-    path('songs/add', views.add_song),
-    path('songs/<int:song_id>/', views.song_detail),
-    path('clear-db/', views.clear_songs),
+    #path('songs/', views.show_songs),
+    #path('songs/json', views.api_handler),
+    #path('songs/add', views.add_song),
+    #path('songs/<int:song_id>/', views.song_detail),
+    #path('clear-db/', views.clear_songs),
+
+    path('songs/', views.show_songs, name='show_songs'),
+    path('songs/add', views.add_song, name='add_song'),
+    path('songs/json', views.api_handler, name='api_handler'),
+    path('songs/<int:song_id>', views.song_detail, name='song_detail'),
+    path('songs/clear', views.clear_songs, name='clear_songs'),
 ]
 
