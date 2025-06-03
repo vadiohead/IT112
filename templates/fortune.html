@@ -1,0 +1,25 @@
+<h2>Get Your Fortune</h2>
+<form method="POST" action="{% url 'fortune' %}">
+  {% csrf_token %}
+  
+  <label>Your name:</label><br>
+  <input type="text" name="user"><br><br>
+
+  <label>Choose a color:</label><br>
+  <select name="color">
+    <option>chartreuse</option>
+    <option>turquoise</option>
+    <option>elephant's breath</option>
+    <option>red</option>
+  </select><br><br>
+
+  <label>Choose a number:</label><br>
+  <select name="number">
+    <option>1</option>
+    <option>2</option>
+  </select><br><br>
+
+  <button type="submit">Submit</button>
+  <br>
+  <a href="/">Main Page</a>
+</form>
