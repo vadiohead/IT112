@@ -1,6 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import SongList
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import SongList
+from .serializers import SongSerializer
 
 def home(request):
     user_name = request.GET.get('user_name', '')
@@ -71,6 +76,10 @@ def add_song(request):
 
     return render(request, 'add_song.html')
 
+def clear_songs(request):
+    SongList.objects.all().delete()
+    return render(request, 'clearance.html')
+
 def api_handler(request):
     songs = SongList.objects.all()
     data = [{
@@ -79,6 +88,17 @@ def api_handler(request):
     } for s in songs]
     return JsonResponse(data, safe=False)
 
-def clear_songs(request):
-    SongList.objects.all().delete()
-    return render(request, 'clearance.html')
+
+def api_song_details(request, song_id):
+    try:
+        song = SongList.objects.get(id=song_id)
+        data = {
+            'id': song.id,
+            'title': song.title,
+            'album': song.album,
+            'year': song.year,
+            'video': song.video
+        }
+        return JsonResponse(data, status=200)
+    except SongList.DoesNotExist:
+        return JsonResponse({'error': 'Song not found'}, status=404)

@@ -26,8 +26,9 @@ urlpatterns = [
     path('songs/', views.show_songs, name='show_songs'),
     path('songs/add', views.add_song, name='add_song'),
     path('songs/json', views.api_handler, name='api_handler'),
-    path('songs/<int:song_id>', views.song_details, name='song_details'),
     path('songs/clear', views.clear_songs, name='clear_songs'),
     path('fortune/', views.fortune, name='fortune'),
+    path('api/songs/<int:song_id>', views.api_song_details, name='api_song_details'),
+    path('songs/<int:song_id>', views.song_details, name='song_details'),
 ]
 

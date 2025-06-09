@@ -4,4 +4,7 @@
 <p><strong>Music video:</strong>
     <a href="{{ song.video }}" target="_blank">{{ song.video }}</a>
 </p>
+<a href="{% url 'api_song_details' song.id %}" target="_blank">
+    Get song details in JSON file</a>
+<br><br>
 <a href="{% url 'show_songs' %}">Back to Songs List</a>
