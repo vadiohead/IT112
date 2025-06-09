@@ -1,11 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import SongList
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from .models import SongList
-from .serializers import SongSerializer
 
 def home(request):
     user_name = request.GET.get('user_name', '')
