@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware', 
 ]
 
-ROOT_URLCONF = 'jango.urls'
+ROOT_URLCONF = 'jangosite.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'jango.wsgi.application'
+WSGI_APPLICATION = 'jangosite.wsgi.application'
 
 
 # Database

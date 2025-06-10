@@ -1,0 +1,10 @@
+<h2>Songs List</h2>
+<ul>
+    {% for song in songs %}
+        <li><a href="{% url 'song_details' song.id %}">{{ song.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'api_handler' %}">Get songs list in JSON file</a><br><br>
+<a href="{% url 'add_song' %}">Add a New Song</a><br><br>
+<a href="/">Main Page</a>
