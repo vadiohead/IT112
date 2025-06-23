@@ -1,4 +1,5 @@
 <h2>Songs List</h2>
+<a href="/admin">Log in</a><br><br>
 <ul>
     {% for song in songs %}
         <li><a href="{% url 'song_details' song.id %}">{{ song.title }}</a></li>
